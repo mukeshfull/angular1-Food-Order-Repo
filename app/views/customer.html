@@ -1,0 +1,51 @@
+<div class="topdiv" style="width:60%;"></div>
+<div class="topbanddiv" style="width:58%;">
+	<div class="fillformdiv">User registration</div>
+	<div class="fillformdivast">Fields marked as asterisks(*) are mandatory</div>
+</div>
+<form class="form-horizontal" name="customerForm" novalidate>
+  
+    <div class="fillformdiv">
+
+		<div class="">
+			<label class="lablefont" for="customerName">First Name</label>
+			<div class="">
+				<input type="text" id="customerName" 
+				class="elementst" ng-model="customerName" required>
+			</div>
+		</div>
+
+		<div class="">
+			<label class="lablefont" for="address">Last Name</label>
+			<div class="">
+				<input type="text" id="address" 
+				class="elementst" ng-model="customerAddress" required>
+			</div>
+		</div>
+		<div class="">
+			<label class="lablefont" for="address">User name</label>
+			<div class="">
+				<input type="text" id="address" 
+				class="elementst" ng-model="customerAddress" required>
+			</div>
+		</div>
+		<div class="">
+			<label class="lablefont" for="address">Password</label>
+			<div class="">
+				<input type="text" id="address" 
+				class="elementst" ng-model="customerAddress" required>
+			</div>
+		</div>
+
+    
+		<div class="">
+		  <button class="btn btn-primary"
+				  ng-disabled="customerForm.$invalid"
+				  ng-click="findRestaurants(customerName, customerAddress)">Cancel</button>
+				  <button class="btn btn-primary"
+				  ng-disabled="customerForm.$invalid"
+				  ng-click="findRestaurants(customerName, customerAddress)">Submit</button>
+		</div>
+		<div class="bottomdiv">@Accenture All Copy Right Reserved.</div>
+	</div>
+</form>

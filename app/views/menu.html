@@ -1,0 +1,58 @@
+<div class="topdiv"></div>
+
+	
+ 
+    <div class="topbanddiv">
+      {{restaurant.name}}
+
+      
+    </div>
+	 
+	<span class="searchbutton"></span>
+	<input type="text" ng-model="searchText" class="searchinput">
+	
+	
+ 
+
+
+
+
+  <div class="divwidth ">
+   
+
+
+    <ul style="list-style: none;">
+      <li ng-repeat="menuItem in restaurant.menuItems | filter:searchText" >
+       
+          <span class="spanpadding" style="width:25%;">{{menuItem.name}}</span>
+		  <select ng-model="xyz" ng-change="cart.add( menuItem, restaurant, xyz )" class="padding50r dropdownwidth">
+			<option value="1">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+		</select>
+          <span class="padding50r">{{menuItem.price}}</span>
+          
+		<hr style="color:#c0c0c0;" />
+      </li>
+	 
+    </ul>
+	<div class="bottomwrapper" >
+		<div class="yourorderdiv">Your order</div>
+
+		<div class="totalorderdiv">Total: {{cart.total() | currency}}</div>
+		<div ng-show="cart.items.length" class="subbuttondiv" >
+			<form>
+				<a href="#/checkout" ng-disabled="!cart.items.length" style="color:white;">Checkout</a>
+			</form>
+		</div>
+	</div>
+	
+     
+     
+
+  </div>
+
+
+
+
+<div class="bottomdiv">@Accenture All Copy Right Reserved.</div>

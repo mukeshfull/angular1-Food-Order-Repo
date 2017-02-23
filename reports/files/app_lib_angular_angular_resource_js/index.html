@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - app\lib\angular\angular-resource.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>app\lib\angular\angular-resource.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">65.96</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">423</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">42.80</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.92</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @license AngularJS v1.0.2
+ * (c) 2010-2012 Google, Inc. http://angularjs.org
+ * License: MIT
+ */
+(function(window, angular, undefined) {
+&#039;use strict&#039;;
+
+/**
+ * @ngdoc overview
+ * @name ngResource
+ * @description
+ */
+
+ /**
+ * @ngdoc object
+ * @name ngResource.$resource
+ * @requires $http
+ *
+ * @description
+ * A factory which creates a resource object that lets you interact with
+ * [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) server-side data sources.
+ *
+ * The returned resource object has action methods which provide high-level behaviors without
+ * the need to interact with the low level {@link ng.$http $http} service.
+ *
+ * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
+ *   `/user/:username`.
+ *
+ * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
+ *   `actions` methods.
+ *
+ *   Each key value in the parameter object is first bound to url template if present and then any
+ *   excess keys are appended to the url search query after the `?`.
+ *
+ *   Given a template `/path/:verb` and parameter `{verb:&#039;greet&#039;, salutation:&#039;Hello&#039;}` results in
+ *   URL `/path/greet?salutation=Hello`.
+ *
+ *   If the parameter value is prefixed with `@` then the value of that parameter is extracted from
+ *   the data object (useful for non-GET operations).
+ *
+ * @param {Object.&lt;Object&gt;=} actions Hash with declaration of custom action that should extend the
+ *   default set of resource actions. The declaration should be created in the following format:
+ *
+ *       {action1: {method:?, params:?, isArray:?},
+ *        action2: {method:?, params:?, isArray:?},
+ *        ...}
+ *
+ *   Where:
+ *
+ *   - `action` – {string} – The name of action. This name becomes the name of the method on your
+ *     resource object.
+ *   - `method` – {string} – HTTP request method. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
+ *     and `JSONP`
+ *   - `params` – {object=} – Optional set of pre-bound parameters for this action.
+ *   - isArray – {boolean=} – If true then the returned object for this action is an array, see
+ *     `returns` section.
+ *
+ * @returns {Object} A resource &quot;class&quot; object with methods for the default set of resource actions
+ *   optionally extended with custom `actions`. The default set contains these actions:
+ *
+ *       { &#039;get&#039;:    {method:&#039;GET&#039;},
+ *         &#039;save&#039;:   {method:&#039;POST&#039;},
+ *         &#039;query&#039;:  {method:&#039;GET&#039;, isArray:true},
+ *         &#039;remove&#039;: {method:&#039;DELETE&#039;},
+ *         &#039;delete&#039;: {method:&#039;DELETE&#039;} };
+ *
+ *   Calling these methods invoke an {@link ng.$http} with the specified http method,
+ *   destination and parameters. When the data is returned from the server then the object is an
+ *   instance of the resource class `save`, `remove` and `delete` actions are available on it as
+ *   methods with the `$` prefix. This allows you to easily perform CRUD operations (create, read,
+ *   update, delete) on server-side data like this:
+ *   &lt;pre&gt;
+        var User = $resource(&#039;/user/:userId&#039;, {userId:&#039;@id&#039;});
+        var user = User.get({userId:123}, function() {
+          user.abc = true;
+          user.$save();
+        });
+     &lt;/pre&gt;
+ *
+ *   It is important to realize that invoking a $resource object method immediately returns an
+ *   empty reference (object or array depending on `isArray`). Once the data is returned from the
+ *   server the existing reference is populated with the actual data. This is a useful trick since
+ *   usually the resource is assigned to a model which is then rendered by the view. Having an empty
+ *   object results in no rendering, once the data arrives from the server then the object is
+ *   populated with the data and the view automatically re-renders itself showing the new data. This
+ *   means that in most case one never has to write a callback function for the action methods.
+ *
+ *   The action methods on the class object or instance object can be invoked with the following
+ *   parameters:
+ *
+ *   - HTTP GET &quot;class&quot; actions: `Resource.action([parameters], [success], [error])`
+ *   - non-GET &quot;class&quot; actions: `Resource.action([parameters], postData, [success], [error])`
+ *   - non-GET instance actions:  `instance.$action([parameters], [success], [error])`
+ *
+ *
+ * @example
+ *
+ * # Credit card resource
+ *
+ * &lt;pre&gt;
+     // Define CreditCard class
+     var CreditCard = $resource(&#039;/user/:userId/card/:cardId&#039;,
+      {userId:123, cardId:&#039;@id&#039;}, {
+       charge: {method:&#039;POST&#039;, params:{charge:true}}
+      });
+
+     // We can retrieve a collection from the server
+     var cards = CreditCard.query(function() {
+       // GET: /user/123/card
+       // server returns: [ {id:456, number:&#039;1234&#039;, name:&#039;Smith&#039;} ];
+
+       var card = cards[0];
+       // each item is an instance of CreditCard
+       expect(card instanceof CreditCard).toEqual(true);
+       card.name = &quot;J. Smith&quot;;
+       // non GET methods are mapped onto the instances
+       card.$save();
+       // POST: /user/123/card/456 {id:456, number:&#039;1234&#039;, name:&#039;J. Smith&#039;}
+       // server returns: {id:456, number:&#039;1234&#039;, name: &#039;J. Smith&#039;};
+
+       // our custom method is mapped as well.
+       card.$charge({amount:9.99});
+       // POST: /user/123/card/456?amount=9.99&amp;charge=true {id:456, number:&#039;1234&#039;, name:&#039;J. Smith&#039;}
+     });
+
+     // we can create an instance as well
+     var newCard = new CreditCard({number:&#039;0123&#039;});
+     newCard.name = &quot;Mike Smith&quot;;
+     newCard.$save();
+     // POST: /user/123/card {number:&#039;0123&#039;, name:&#039;Mike Smith&#039;}
+     // server returns: {id:789, number:&#039;01234&#039;, name: &#039;Mike Smith&#039;};
+     expect(newCard.id).toEqual(789);
+ * &lt;/pre&gt;
+ *
+ * The object returned from this function execution is a resource &quot;class&quot; which has &quot;static&quot; method
+ * for each action in the definition.
+ *
+ * Calling these methods invoke `$http` on the `url` template with the given `method` and `params`.
+ * When the data is returned from the server then the object is an instance of the resource type and
+ * all of the non-GET methods are available with `$` prefix. This allows you to easily support CRUD
+ * operations (create, read, update, delete) on server-side data.
+
+   &lt;pre&gt;
+     var User = $resource(&#039;/user/:userId&#039;, {userId:&#039;@id&#039;});
+     var user = User.get({userId:123}, function() {
+       user.abc = true;
+       user.$save();
+     });
+   &lt;/pre&gt;
+ *
+ *     It&#039;s worth noting that the success callback for `get`, `query` and other method gets passed
+ *     in the response that came from the server as well as $http header getter function, so one
+ *     could rewrite the above example and get access to http headers as:
+ *
+   &lt;pre&gt;
+     var User = $resource(&#039;/user/:userId&#039;, {userId:&#039;@id&#039;});
+     User.get({userId:123}, function(u, getResponseHeaders){
+       u.abc = true;
+       u.$save(function(u, putResponseHeaders) {
+         //u =&gt; saved user object
+         //putResponseHeaders =&gt; $http header getter
+       });
+     });
+   &lt;/pre&gt;
+
+ * # Buzz client
+
+   Let&#039;s look at what a buzz client created with the `$resource` service looks like:
+    &lt;doc:example&gt;
+      &lt;doc:source jsfiddle=&quot;false&quot;&gt;
+       &lt;script&gt;
+         function BuzzController($resource) {
+           this.userId = &#039;googlebuzz&#039;;
+           this.Activity = $resource(
+             &#039;https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments&#039;,
+             {alt:&#039;json&#039;, callback:&#039;JSON_CALLBACK&#039;},
+             {get:{method:&#039;JSONP&#039;, params:{visibility:&#039;@self&#039;}}, replies: {method:&#039;JSONP&#039;, params:{visibility:&#039;@self&#039;, comments:&#039;@comments&#039;}}}
+           );
+         }
+
+         BuzzController.prototype = {
+           fetch: function() {
+             this.activities = this.Activity.get({userId:this.userId});
+           },
+           expandReplies: function(activity) {
+             activity.replies = this.Activity.replies({userId:this.userId, activityId:activity.id});
+           }
+         };
+         BuzzController.$inject = [&#039;$resource&#039;];
+       &lt;/script&gt;
+
+       &lt;div ng-controller=&quot;BuzzController&quot;&gt;
+         &lt;input ng-model=&quot;userId&quot;/&gt;
+         &lt;button ng-click=&quot;fetch()&quot;&gt;fetch&lt;/button&gt;
+         &lt;hr/&gt;
+         &lt;div ng-repeat=&quot;item in activities.data.items&quot;&gt;
+           &lt;h1 style=&quot;font-size: 15px;&quot;&gt;
+             &lt;img src=&quot;{{item.actor.thumbnailUrl}}&quot; style=&quot;max-height:30px;max-width:30px;&quot;/&gt;
+             &lt;a href=&quot;{{item.actor.profileUrl}}&quot;&gt;{{item.actor.name}}&lt;/a&gt;
+             &lt;a href ng-click=&quot;expandReplies(item)&quot; style=&quot;float: right;&quot;&gt;Expand replies: {{item.links.replies[0].count}}&lt;/a&gt;
+           &lt;/h1&gt;
+           {{item.object.content | html}}
+           &lt;div ng-repeat=&quot;reply in item.replies.data.items&quot; style=&quot;margin-left: 20px;&quot;&gt;
+             &lt;img src=&quot;{{reply.actor.thumbnailUrl}}&quot; style=&quot;max-height:30px;max-width:30px;&quot;/&gt;
+             &lt;a href=&quot;{{reply.actor.profileUrl}}&quot;&gt;{{reply.actor.name}}&lt;/a&gt;: {{reply.content | html}}
+           &lt;/div&gt;
+         &lt;/div&gt;
+       &lt;/div&gt;
+      &lt;/doc:source&gt;
+      &lt;doc:scenario&gt;
+      &lt;/doc:scenario&gt;
+    &lt;/doc:example&gt;
+ */
+angular.module(&#039;ngResource&#039;, [&#039;ng&#039;]).
+  factory(&#039;$resource&#039;, [&#039;$http&#039;, &#039;$parse&#039;, function($http, $parse) {
+    var DEFAULT_ACTIONS = {
+      &#039;get&#039;:    {method:&#039;GET&#039;},
+      &#039;save&#039;:   {method:&#039;POST&#039;},
+      &#039;query&#039;:  {method:&#039;GET&#039;, isArray:true},
+      &#039;remove&#039;: {method:&#039;DELETE&#039;},
+      &#039;delete&#039;: {method:&#039;DELETE&#039;}
+    };
+    var noop = angular.noop,
+        forEach = angular.forEach,
+        extend = angular.extend,
+        copy = angular.copy,
+        isFunction = angular.isFunction,
+        getter = function(obj, path) {
+          return $parse(path)(obj);
+        };
+
+  /**
+   * We need our custom mehtod because encodeURIComponent is too agressive and doesn&#039;t follow
+   * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
+   * segments:
+   *    segment       = *pchar
+   *    pchar         = unreserved / pct-encoded / sub-delims / &quot;:&quot; / &quot;@&quot;
+   *    pct-encoded   = &quot;%&quot; HEXDIG HEXDIG
+   *    unreserved    = ALPHA / DIGIT / &quot;-&quot; / &quot;.&quot; / &quot;_&quot; / &quot;~&quot;
+   *    sub-delims    = &quot;!&quot; / &quot;$&quot; / &quot;&amp;&quot; / &quot;&#039;&quot; / &quot;(&quot; / &quot;)&quot;
+   *                     / &quot;*&quot; / &quot;+&quot; / &quot;,&quot; / &quot;;&quot; / &quot;=&quot;
+   */
+  function encodeUriSegment(val) {
+    return encodeUriQuery(val, true).
+      replace(/%26/gi, &#039;&amp;&#039;).
+      replace(/%3D/gi, &#039;=&#039;).
+      replace(/%2B/gi, &#039;+&#039;);
+  }
+
+
+  /**
+   * This method is intended for encoding *key* or *value* parts of query component. We need a custom
+   * method becuase encodeURIComponent is too agressive and encodes stuff that doesn&#039;t have to be
+   * encoded per http://tools.ietf.org/html/rfc3986:
+   *    query       = *( pchar / &quot;/&quot; / &quot;?&quot; )
+   *    pchar         = unreserved / pct-encoded / sub-delims / &quot;:&quot; / &quot;@&quot;
+   *    unreserved    = ALPHA / DIGIT / &quot;-&quot; / &quot;.&quot; / &quot;_&quot; / &quot;~&quot;
+   *    pct-encoded   = &quot;%&quot; HEXDIG HEXDIG
+   *    sub-delims    = &quot;!&quot; / &quot;$&quot; / &quot;&amp;&quot; / &quot;&#039;&quot; / &quot;(&quot; / &quot;)&quot;
+   *                     / &quot;*&quot; / &quot;+&quot; / &quot;,&quot; / &quot;;&quot; / &quot;=&quot;
+   */
+  function encodeUriQuery(val, pctEncodeSpaces) {
+    return encodeURIComponent(val).
+      replace(/%40/gi, &#039;@&#039;).
+      replace(/%3A/gi, &#039;:&#039;).
+      replace(/%24/g, &#039;$&#039;).
+      replace(/%2C/gi, &#039;,&#039;).
+      replace((pctEncodeSpaces ? null : /%20/g), &#039;+&#039;);
+  }
+
+  function Route(template, defaults) {
+      this.template = template = template + &#039;#&#039;;
+      this.defaults = defaults || {};
+      var urlParams = this.urlParams = {};
+      forEach(template.split(/\W/), function(param){
+        if (param &amp;&amp; template.match(new RegExp(&quot;[^\\\\]:&quot; + param + &quot;\\W&quot;))) {
+          urlParams[param] = true;
+        }
+      });
+      this.template = template.replace(/\\:/g, &#039;:&#039;);
+    }
+
+    Route.prototype = {
+      url: function(params) {
+        var self = this,
+            url = this.template,
+            encodedVal;
+
+        params = params || {};
+        forEach(this.urlParams, function(_, urlParam){
+          encodedVal = encodeUriSegment(params[urlParam] || self.defaults[urlParam] || &quot;&quot;);
+          url = url.replace(new RegExp(&quot;:&quot; + urlParam + &quot;(\\W)&quot;), encodedVal + &quot;$1&quot;);
+        });
+        url = url.replace(/\/?#$/, &#039;&#039;);
+        var query = [];
+        forEach(params, function(value, key){
+          if (!self.urlParams[key]) {
+            query.push(encodeUriQuery(key) + &#039;=&#039; + encodeUriQuery(value));
+          }
+        });
+        query.sort();
+        url = url.replace(/\/*$/, &#039;&#039;);
+        return url + (query.length ? &#039;?&#039; + query.join(&#039;&amp;&#039;) : &#039;&#039;);
+      }
+    };
+
+
+    function ResourceFactory(url, paramDefaults, actions) {
+      var route = new Route(url);
+
+      actions = extend({}, DEFAULT_ACTIONS, actions);
+
+      function extractParams(data){
+        var ids = {};
+        forEach(paramDefaults || {}, function(value, key){
+          ids[key] = value.charAt &amp;&amp; value.charAt(0) == &#039;@&#039; ? getter(data, value.substr(1)) : value;
+        });
+        return ids;
+      }
+
+      function Resource(value){
+        copy(value || {}, this);
+      }
+
+      forEach(actions, function(action, name) {
+        var hasBody = action.method == &#039;POST&#039; || action.method == &#039;PUT&#039; || action.method == &#039;PATCH&#039;;
+        Resource[name] = function(a1, a2, a3, a4) {
+          var params = {};
+          var data;
+          var success = noop;
+          var error = null;
+          switch(arguments.length) {
+          case 4:
+            error = a4;
+            success = a3;
+            //fallthrough
+          case 3:
+          case 2:
+            if (isFunction(a2)) {
+              if (isFunction(a1)) {
+                success = a1;
+                error = a2;
+                break;
+              }
+
+              success = a2;
+              error = a3;
+              //fallthrough
+            } else {
+              params = a1;
+              data = a2;
+              success = a3;
+              break;
+            }
+          case 1:
+            if (isFunction(a1)) success = a1;
+            else if (hasBody) data = a1;
+            else params = a1;
+            break;
+          case 0: break;
+          default:
+            throw &quot;Expected between 0-4 arguments [params, data, success, error], got &quot; +
+              arguments.length + &quot; arguments.&quot;;
+          }
+
+          var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
+          $http({
+            method: action.method,
+            url: route.url(extend({}, extractParams(data), action.params || {}, params)),
+            data: data
+          }).then(function(response) {
+              var data = response.data;
+
+              if (data) {
+                if (action.isArray) {
+                  value.length = 0;
+                  forEach(data, function(item) {
+                    value.push(new Resource(item));
+                  });
+                } else {
+                  copy(data, value);
+                }
+              }
+              (success||noop)(value, response.headers);
+            }, error);
+
+          return value;
+        };
+
+
+        Resource.bind = function(additionalParamDefaults){
+          return ResourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions);
+        };
+
+
+        Resource.prototype[&#039;$&#039; + name] = function(a1, a2, a3) {
+          var params = extractParams(this),
+              success = noop,
+              error;
+
+          switch(arguments.length) {
+          case 3: params = a1; success = a2; error = a3; break;
+          case 2:
+          case 1:
+            if (isFunction(a1)) {
+              success = a1;
+              error = a2;
+            } else {
+              params = a1;
+              success = a2 || noop;
+            }
+          case 0: break;
+          default:
+            throw &quot;Expected between 1-3 arguments [params, success, error], got &quot; +
+              arguments.length + &quot; arguments.&quot;;
+          }
+          var data = hasBody ? this : undefined;
+          Resource[name].call(this, params, data, success, error);
+        };
+      });
+      return Resource;
+    }
+
+    return ResourceFactory;
+  }]);
+
+})(window, window.angular);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

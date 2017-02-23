@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - app\lib\angular\angular-loader.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>app\lib\angular\angular-loader.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">71.71</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">269</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">15.94</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">0.41</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @license AngularJS v1.0.2
+ * (c) 2010-2012 Google, Inc. http://angularjs.org
+ * License: MIT
+ */
+
+(
+
+/**
+ * @ngdoc interface
+ * @name angular.Module
+ * @description
+ *
+ * Interface for configuring angular {@link angular.module modules}.
+ */
+
+function setupModuleLoader(window) {
+
+  function ensure(obj, name, factory) {
+    return obj[name] || (obj[name] = factory());
+  }
+
+  return ensure(ensure(window, &#039;angular&#039;, Object), &#039;module&#039;, function() {
+    /** @type {Object.&lt;string, angular.Module&gt;} */
+    var modules = {};
+
+    /**
+     * @ngdoc function
+     * @name angular.module
+     * @description
+     *
+     * The `angular.module` is a global place for creating and registering Angular modules. All
+     * modules (angular core or 3rd party) that should be available to an application must be
+     * registered using this mechanism.
+     *
+     *
+     * # Module
+     *
+     * A module is a collocation of services, directives, filters, and configure information. Module
+     * is used to configure the {@link AUTO.$injector $injector}.
+     *
+     * &lt;pre&gt;
+     * // Create a new module
+     * var myModule = angular.module(&#039;myModule&#039;, []);
+     *
+     * // register a new service
+     * myModule.value(&#039;appName&#039;, &#039;MyCoolApp&#039;);
+     *
+     * // configure existing services inside initialization blocks.
+     * myModule.config(function($locationProvider) {
+&#039;use strict&#039;;
+     *   // Configure existing providers
+     *   $locationProvider.hashPrefix(&#039;!&#039;);
+     * });
+     * &lt;/pre&gt;
+     *
+     * Then you can create an injector and load your modules like this:
+     *
+     * &lt;pre&gt;
+     * var injector = angular.injector([&#039;ng&#039;, &#039;MyModule&#039;])
+     * &lt;/pre&gt;
+     *
+     * However it&#039;s more likely that you&#039;ll just use
+     * {@link ng.directive:ngApp ngApp} or
+     * {@link angular.bootstrap} to simplify this process for you.
+     *
+     * @param {!string} name The name of the module to create or retrieve.
+     * @param {Array.&lt;string&gt;=} requires If specified then new module is being created. If unspecified then the
+     *        the module is being retrieved for further configuration.
+     * @param {Function} configFn Option configuration function for the module. Same as
+     *        {@link angular.Module#config Module#config()}.
+     * @returns {module} new module with the {@link angular.Module} api.
+     */
+    return function module(name, requires, configFn) {
+      if (requires &amp;&amp; modules.hasOwnProperty(name)) {
+        modules[name] = null;
+      }
+      return ensure(modules, name, function() {
+        if (!requires) {
+          throw Error(&#039;No module: &#039; + name);
+        }
+
+        /** @type {!Array.&lt;Array.&lt;*&gt;&gt;} */
+        var invokeQueue = [];
+
+        /** @type {!Array.&lt;Function&gt;} */
+        var runBlocks = [];
+
+        var config = invokeLater(&#039;$injector&#039;, &#039;invoke&#039;);
+
+        /** @type {angular.Module} */
+        var moduleInstance = {
+          // Private state
+          _invokeQueue: invokeQueue,
+          _runBlocks: runBlocks,
+
+          /**
+           * @ngdoc property
+           * @name angular.Module#requires
+           * @propertyOf angular.Module
+           * @returns {Array.&lt;string&gt;} List of module names which must be loaded before this module.
+           * @description
+           * Holds the list of modules which the injector will load before the current module is loaded.
+           */
+          requires: requires,
+
+          /**
+           * @ngdoc property
+           * @name angular.Module#name
+           * @propertyOf angular.Module
+           * @returns {string} Name of the module.
+           * @description
+           */
+          name: name,
+
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#provider
+           * @methodOf angular.Module
+           * @param {string} name service name
+           * @param {Function} providerType Construction function for creating new instance of the service.
+           * @description
+           * See {@link AUTO.$provide#provider $provide.provider()}.
+           */
+          provider: invokeLater(&#039;$provide&#039;, &#039;provider&#039;),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#factory
+           * @methodOf angular.Module
+           * @param {string} name service name
+           * @param {Function} providerFunction Function for creating new instance of the service.
+           * @description
+           * See {@link AUTO.$provide#factory $provide.factory()}.
+           */
+          factory: invokeLater(&#039;$provide&#039;, &#039;factory&#039;),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#service
+           * @methodOf angular.Module
+           * @param {string} name service name
+           * @param {Function} constructor A constructor function that will be instantiated.
+           * @description
+           * See {@link AUTO.$provide#service $provide.service()}.
+           */
+          service: invokeLater(&#039;$provide&#039;, &#039;service&#039;),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#value
+           * @methodOf angular.Module
+           * @param {string} name service name
+           * @param {*} object Service instance object.
+           * @description
+           * See {@link AUTO.$provide#value $provide.value()}.
+           */
+          value: invokeLater(&#039;$provide&#039;, &#039;value&#039;),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#constant
+           * @methodOf angular.Module
+           * @param {string} name constant name
+           * @param {*} object Constant value.
+           * @description
+           * Because the constant are fixed, they get applied before other provide methods.
+           * See {@link AUTO.$provide#constant $provide.constant()}.
+           */
+          constant: invokeLater(&#039;$provide&#039;, &#039;constant&#039;, &#039;unshift&#039;),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#filter
+           * @methodOf angular.Module
+           * @param {string} name Filter name.
+           * @param {Function} filterFactory Factory function for creating new instance of filter.
+           * @description
+           * See {@link ng.$filterProvider#register $filterProvider.register()}.
+           */
+          filter: invokeLater(&#039;$filterProvider&#039;, &#039;register&#039;),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#controller
+           * @methodOf angular.Module
+           * @param {string} name Controller name.
+           * @param {Function} constructor Controller constructor function.
+           * @description
+           * See {@link ng.$controllerProvider#register $controllerProvider.register()}.
+           */
+          controller: invokeLater(&#039;$controllerProvider&#039;, &#039;register&#039;),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#directive
+           * @methodOf angular.Module
+           * @param {string} name directive name
+           * @param {Function} directiveFactory Factory function for creating new instance of
+           * directives.
+           * @description
+           * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
+           */
+          directive: invokeLater(&#039;$compileProvider&#039;, &#039;directive&#039;),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#config
+           * @methodOf angular.Module
+           * @param {Function} configFn Execute this function on module load. Useful for service
+           *    configuration.
+           * @description
+           * Use this method to register work which needs to be performed on module loading.
+           */
+          config: config,
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#run
+           * @methodOf angular.Module
+           * @param {Function} initializationFn Execute this function after injector creation.
+           *    Useful for application initialization.
+           * @description
+           * Use this method to register work which needs to be performed when the injector with
+           * with the current module is finished loading.
+           */
+          run: function(block) {
+            runBlocks.push(block);
+            return this;
+          }
+        };
+
+        if (configFn) {
+          config(configFn);
+        }
+
+        return  moduleInstance;
+
+        /**
+         * @param {string} provider
+         * @param {string} method
+         * @param {String=} insertMethod
+         * @returns {angular.Module}
+         */
+        function invokeLater(provider, method, insertMethod) {
+          return function() {
+            invokeQueue[insertMethod || &#039;push&#039;]([provider, method, arguments]);
+            return moduleInstance;
+          }
+        }
+      });
+    };
+  });
+
+}
+)(window);
+
+/**
+ * Closure compiler type information
+ *
+ * @typedef { {
+ *   requires: !Array.&lt;string&gt;,
+ *   invokeQueue: !Array.&lt;Array.&lt;*&gt;&gt;,
+ *
+ *   service: function(string, Function):angular.Module,
+ *   factory: function(string, Function):angular.Module,
+ *   value: function(string, *):angular.Module,
+ *
+ *   filter: function(string, Function):angular.Module,
+ *
+ *   init: function(Function):angular.Module
+ * } }
+ */
+angular.Module;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
